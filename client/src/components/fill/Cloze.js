@@ -27,14 +27,14 @@ const Cloze = (props) => {
           id: contentId.toString(),
           content: itemValue,
         };
-        arr.push(data);
+        arr[parseInt(dropId) - 1] = data;
         setAnswer(arr);
         let temp = [...leftItems];
         temp.splice(result.source.index, 1);
         setLeftItems(temp);
       } else {
         let prevData = questionData.words.find(
-          (item) => item.content === arr[dropId - 1].content
+          (item) => item?.content === arr[dropId - 1]?.content
         );
         let data = {
           id: contentId.toString(),
@@ -99,8 +99,22 @@ const Cloze = (props) => {
   }, [answer]);
 
   useEffect(() => {
-    setAnswer(answers[queIndex]);
-  }, [answers]);
+    let arr = Array(questionData.words.length).fill({});
+    setAnswer(arr);
+  }, [questionData]);
+
+  useEffect(() => {
+    const container = document.createElement("div");
+    container.innerHTML = line;
+    const nodes = Array.from(container?.childNodes[0]?.childNodes || []);
+    let count = 0;
+    nodes.forEach((node, index) => {
+      if (node.nodeName.toLowerCase() === "u") {
+        count++;
+      }
+    });
+    setAnswer(Array(count).fill({}));
+  }, [line]);
 
   return (
     <div className="border border-dashed p-4 rounded-md my-4">
